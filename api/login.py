@@ -13,7 +13,6 @@ def login():
         try:
             mob_r_eml =  str(json_obj["Mobile/Email"])
             passwrd =  json_obj["Password"]
-            print('11111111')
             try:
                 query = f"SELECT UserId FROM KA_UserRegistration WHERE (Mobile_Number = '{mob_r_eml}' \
                 or Email = '{mob_r_eml}') AND PASSWORD = '{passwrd}'"
