@@ -1,6 +1,6 @@
-from flask import Blueprint,request
+from flask import Blueprint,request,jsonify
 from databaseconfig import databaseconfig
-import json
+
 
 login_bp = Blueprint('login',__name__)
 @login_bp.route('/login', methods=['post'])
@@ -19,19 +19,19 @@ def login():
                 mycursor.execute(query)
                 res = mycursor.fetchall()
                 if len(res) == 0:
-                    return json.dumps({"Status":"Error","Message":"Credentials Does Not Match"})    
+                    return jsonify({"Status":"Error","Message":"Credentials Does Not Match"})    
                 else:
-                    return json.dumps({"Status":"Success","Message":"Login Successful","Data":{"User_ID":res[0][0]}})
+                    return jsonify({"Status":"Success","Message":"Login Successful","Data":{"User_ID":res[0][0]}})
                 
             except Exception as err:
                 conn.close()
                 mycursor.close()
-                return json.dumps({"Status": "Error", "Message": "Error In Query " + str(err)})
+                return jsonify({"Status": "Error", "Message": "Error In Query " + str(err)})
         except Exception as err:
             conn.close()
             mycursor.close()
-            return json.dumps({"Status": "Error", "Message": "Json Not Specified Properly"})
+            return jsonify({"Status": "Error", "Message": "Json Not Specified Properly"})
     else:
-        return json.dumps({"Status":"Error","Message":"Error in connection"}) 
+        return jsonify({"Status":"Error","Message":"Error in connection"}) 
 
 

@@ -1,6 +1,5 @@
-from flask import Blueprint,request
+from flask import Blueprint,request,jsonify
 from databaseconfig import databaseconfig
-import json
 import datetime
 
 
@@ -29,25 +28,29 @@ def user_reg():
                 mob_num = [i[0].strip() for i in res]
                 eml = [i[1].strip() for i in res]    
                 if mobile_no.strip() in mob_num:
-                    return json.dumps({"Status": "Error", "Message": "This mobile number has already registered"})
+                    return jsonify({"Status": "Error", "Message": "This mobile number has already registered"})
                 elif email.strip() in eml:
-                    return json.dumps({"Status": "Error", "Message": "This email has already registered"})
+                    return jsonify({"Status": "Error", "Message": "This email has already registered"})
                 query = f'INSERT INTO KA_UserRegistration(PASSWORD,First_Name,Last_Name,Mobile_Number,\
                                                         Email,PrefLanguage,AlternateMobile_Number,CreatedDate)\
                                                         VALUES(%s,%s,%s,%s,%s,%s,%s,%s)'
                 values = (passwrd, fst_name, lst_name, mobile_no, email, pref_lang, alter_mobile_no, str(datetime.datetime.now()))
                 mycursor.execute(query, values)
                 conn.commit()
-                return json.dumps({"Status":"Success","Message":"User Created"})
+                query = f"SELECT UserId FROM KA_UserRegistration WHERE Mobile_Number = '{mobile_no}' \
+                and Email = '{email}'"
+                res = mycursor.execute(query)
+                res = mycursor.fetchall()
+                return jsonify({"Status":"Success","Message":"User Created","User Id":res[0][0]})
             except Exception as err:
                 conn.close()
                 mycursor.close()
-                return json.dumps({"Status": "Error", "Message": "Error In Query " + err})
+                return jsonify({"Status": "Error", "Message": "Error In Query " + str(err)})
         except:
             conn.close()
             mycursor.close()
-            return json.dumps({"Status": "Error", "Message": "Json Not Specified Properly"})
+            return jsonify({"Status": "Error", "Message": "Json Not Specified Properly"})
     else:
-        return json.dumps({"Status":"Error","Message":"Error in connection"}) 
+        return jsonify({"Status":"Error","Message":"Error in connection"}) 
 
 
